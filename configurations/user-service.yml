@@ -1,0 +1,20 @@
+spring:
+  #config-server에 설정을 가져오기 위해 springCloudBus를 이용한다.
+  #번거롭게 actuator에서 refresh 호출하는것보다 효율적이다.
+  #분산되어있는 시스템끼리 연결해주기 위해 메시지브로커가 필요한데 메시지 브로커 역할로 rabbitMq를 사용한다.
+  #config-server의 상태 및 구성에 대한 변경 사항을 연결된 노드에게 broadCast한다.
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672 #시스템에서 이용하는 포트. 웹뷰 포트는 15672
+    username: '{cipher}0ca1a8c1486bb650a37e42c9b938c1357f7c57c4caa4864ff0e4c46d93be3c55' #configServer의 encryptKey로 암호화된 값
+    password: '{cipher}0ca1a8c1486bb650a37e42c9b938c1357f7c57c4caa4864ff0e4c46d93be3c55'
+
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+      path: /h2-console
+  datasource:
+    url: jdbc:mysql://localhost:3306/test
+    username: '{cipher}abc7c43bc0213d35bd2012a80ccef8d5377c6dc70da4ba14fc3dd84b1a348b4c'

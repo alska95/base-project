@@ -1,0 +1,26 @@
+* brew install mysql
+* 시작, 종료, 상태확인: mysql.server start, mysql.server stop, mysql.server status
+* 접속: mysql -uroot
+* db 생성: create database mydb
+
+* access denied 해결
+sudo mysql -u root
+use mysql
+select user, host, plugin from mysql.user;
+set password for 'root'@'localhost'=password('123');
+flush privileges;
+
+기본 포트 jdbc:mysql://localhost:3306/{db}
+(mysql과 mariadb는 기본적으로 같은 포트(3306)를 사용하고, 같은 디렉토리 구조와 파일을 사용하기 때문에 충돌이 발생할 수 있어서 둘 중 하나만 사용할것. 나는 mysql사용.)
+
+
+Docker
+    실행시 컨테이너가 자동 종료됐음.
+    원인을 docker logs mysql로 확인
+    데이터 디렉토리를 재사용 하기 위해 마운트함. 해당 디렉토리는 mysql initialize되어있는 상태여야함. 한번 해놓고 계속 사용
+        -v /Users/user/Desktop/git/SpringCloud_Practice/supportsub/mysqlmount:/var/lib/mysql
+    비밀번호 없이 실행 환경변수
+        -e MYSQL_ALLOW_EMPTY_PASSWORD=true
+    --secure-file-priv에 접근할 수 없다고 함
+        엔트리에 추가하여 해당 옵션 제거 --secure-file-priv=''
+

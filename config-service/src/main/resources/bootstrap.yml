@@ -1,0 +1,9 @@
+encrypt:
+  key: rkskekfkakqktkdkwkckzkxkvk #편의상 public으로 관리
+#  key-store:
+#    location: /Users/user/Desktop/git/SpringCloud_Practice/support/encryptionKey.jks
+#    password: password
+#    alias: encryptionKey
+  #keyStore로 관리도 가능
+  #keyStore사용하면 local에 privateKey보관 예정
+#  encryptionKey.jks키 파일 생성 : keytool -genkey -keyalg RSA -alias encryptionKey -keystore encryptionKey.jks -storepass password -validity 3600 -keysize 2048

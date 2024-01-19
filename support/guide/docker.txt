@@ -1,0 +1,56 @@
+다운로드 : https://www.docker.com/products/docker-desktop
+
+run 옵션들 :
+    -d : 컨테이너를 백그라운드에서 실행하며 컨테이너 ID를 출력한다.
+        안쓰면 해당 어플리케이션의 로그가 터미널에 계속 출력됨. 디버깅할때나 쓰면 될듯
+    -i : 컨테이너의 표준 입력을 열어둔다.
+    -t : 가상 터미널을 할당한다.
+    -it : 보통 이렇게 같이 사용하여 터미널을 연다.
+    --name : 컨테이너에 이름을 지정한다.
+    -p : 호스트와 컨테이너 간의 포트 매핑을 설정한다.
+        -P 나 --publish-all 옵션을 사용하면 자동으로 expose로 지정된 모든 포트를 사용 가능한 호스트 포트에 매핑한다. (랜덤 포트 매핑되니까 직접 지정해줄것)
+    -v : 호스트와 컨테이너 간의 볼륨을 연결한다.
+    --rm : 컨테이너가 종료되면 자동으로 삭제한다.
+    -e : 컨테이너 내에서 사용할 환경 변수를 설정한다.
+    --link : 컨테이너 간의 링크를 생성한다.
+    --net : 네트워크를 지정한다.
+
+mysql 실행
+    docker run -d -p 3306:3306 -e MYSQL_ALLOW_EMPTY_PASSWORD=true --name mysql mysql:5.7
+
+도커 테스트
+    빌드 docker build --tag rhsalska55/userservice:1.0 .
+    레파지토리 푸쉬 docker push rhsalska55/userservice:1.0
+    삭제 docker rmi ${이미지id}
+    레파지토리 풀 docker pull rhsalska55/userservice:1.0
+    이미지 실행 docker run rhsalska55/userservice:1.0
+    정지 docker stop rhsalska55/userservice:1.0
+
+도커 브릿지 네트워크
+    동일한 호스트의 도커 컨테이너 간의 네트워크 통신을 가능하게 한다.
+    컨테이너의 ID나 이름을 통해 다른 컨테이너에 접근 가능하게 된다.
+    이는 Docker의 내장 DNS가 서비스 이름을 해당 서비스의 IP 주소로 자동으로 해석하기 때문.
+    따라서 컨테이너의 IP가 변경되더라도 접속에 문제가 없다.
+    컨테이너가 서로 다른 호스트에 있을 경우
+    스웜 모드를 활성화하고 오버레이 네트워크를 사용하면 ID를 이용해서 컨테이너 간 통신이 가능하다고 한다.
+    이번 테스트에서는 같은 호스트(로컬)에서 컨테이너를 여러개 띄울거라 브릿지 네트워크 사용 예정
+    스웜을 테스트해보려면 도커를 여러개 띄워두고 이를 호스트 취급하고 도커 안에서 서비스 도커 컨테이너를 실행시켜보면 되려나
+
+    docker network create ecommerce-network
+    docker network ls
+    docker network inspect ecommerce-network
+    아래와 같은 설정의 네트워크가 생성됨
+        "Config": [
+            {
+                "Subnet": "172.18.0.0/16",
+                "Gateway": "172.18.0.1"
+            }
+        ]
+
+
+config-service 컨테이너 이미지
+    이미지 실행: docker run -d --name config-service -p 8888:8888 -e spring.rabbitmq.host=rabbitmq spring.profiles.active=default --network ecommerce-network rhsalska55/config-service:1.0
+    브릿지 네트워크 사용: -e spring.rabbitmq.host=rabbitmq
+        application.yml설정을 매번 바뀌는 rabbitmq url과 맞춰서 변경해야하는 일을 방지해준다.
+    로그 확인하는법: docker logs -f my-container
+        -f 옵션은 실시간 업데이트

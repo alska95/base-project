@@ -1,0 +1,33 @@
+token:
+  expiration: 36000009
+  secret: user_name
+
+gateway:
+  ip: 127.0.0.1
+
+kafka:
+  topic:
+    order:
+      catalog: 'order-catalog'
+      sync: 'order-db-sync'
+  broker:
+    uri: 'dockerscript-kafka-1:9092'
+
+spring:
+  zipkin:
+    base-url: http://localhost:9411
+    enabled: true
+  sleuth:
+    sampler:
+      probability: 1.0
+  kafka:
+    consumer:
+      group-id: consumer-group-id
+  datasource:
+    initialization-mode: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans, busrefresh, info, prometheus, metrics

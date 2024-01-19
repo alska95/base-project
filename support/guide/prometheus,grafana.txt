@@ -1,0 +1,29 @@
+Prometheus
+- 개요
+    Metrics를 수집하고 모니터링 및 알람에 사용되는 오픈소스 애플리케이션
+    CNCF(Cloud Native Computer Foundation)에서 관리되는 2번째 공식 프로젝트
+    Pull방식의 구조와 다양한 Metric Exprter제공
+    시계열 DB에 Metrics저장
+- 다운로드 : https://prometheus.io/download/
+- yml파일 설정 예시
+  - job_name: 'user-service'
+    scrape_interval: 15s
+    metrics_path: /user-service/actuator/prometheus
+    static_configs:
+      - targets: ['localhost:8100']
+- 실행 : ./prometheus --config.file=prometheus.yml
+
+
+Grafana
+- 데이터 시각화
+- 다운로드 : https://grafana.com/grafana/download 아니면 클라우드 써도됨
+- 디폴트 설정 :
+    포트: 3000
+    아이디, 비번: admin
+    필요한 설정 :
+        - 데이터 소스 추가 : prometheus추가하고 url입력
+        - 데쉬보드 추가 : 직접 만들거나 import해오기
+            -import url: https://grafana.com/grafana/dashboards/ 여기서 jvm, prometheus, springCloud 등 찾아서 넣기
+                -id값
+                prometheus : 3662
+                spring cloud gateway : 11506

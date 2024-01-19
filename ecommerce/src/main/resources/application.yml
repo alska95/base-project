@@ -1,0 +1,15 @@
+server:
+  port: 8000
+  #application name for service discovery
+spring:
+  application:
+    name: ecommerce
+  #since this project is service discovery, there's no need for service discovery registration.
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    serviceUrl:
+      defaultZone: http://localhost:8000/eureka
+  server:
+    enable-self-preservation: false

@@ -1,0 +1,11 @@
+brew install rabbitmq
+export PATH=$PATH:/user/local/sbin
+rabbitmq-server
+
+Docker 띄우기 (포트 하나하나매칭이 귀찮은데 따로 명령어가 없는것 같다)
+docker run -d --name rabbitmq --network ecommerce-network -p 5672:5672 -p 15672:15672 -p 5671:5671 -p 15671:15671 -p 4369:4369 -e RABBITMQ_DEFAULT_USER=guest -e RABBITMQ_DEFAULT_PASS=guest rabbitmq:management
+    4369는 erlang관련 포트
+    컨테이너 정지 docker stop rabbitmq
+    컨테이너 삭제 docker rm rabbitmq
+    이미지 삭제 docker rmi rabbitmq:management
+    관련 스크립트도 직접 만들어봄 rabbitmq.sh (chatgpt도움을 받아서 ㅎ)

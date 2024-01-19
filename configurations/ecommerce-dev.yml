@@ -1,0 +1,6 @@
+token:
+  expiration: 36000000
+  secret: my_token_dev
+
+gateway:
+  ip: 127.0.0.1

@@ -1,0 +1,55 @@
+server:
+  port: 0
+
+spring:
+  application:
+    name: catalog-service
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: '{cipher}0ca1a8c1486bb650a37e42c9b938c1357f7c57c4caa4864ff0e4c46d93be3c55'
+    password: '{cipher}0ca1a8c1486bb650a37e42c9b938c1357f7c57c4caa4864ff0e4c46d93be3c55'
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+      path: /h2-console
+  datasource:
+    url: jdbc:mysql://localhost:3306/test
+    username: '{cipher}abc7c43bc0213d35bd2012a80ccef8d5377c6dc70da4ba14fc3dd84b1a348b4c'
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    generate-ddl: true
+  cloud:
+    gateway:
+      routes:
+        - id: catalog-service
+          uri: lb://catalog-service
+          predicates:
+            - Path=/catalog-service/**
+  kafka:
+    consumer:
+      group-id: consumer-group-id
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    lease-renewal-interval-in-seconds: 1
+    lease-expiration-duration-in-seconds: 2
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8000/eureka
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans, busrefresh
+
+greeting:
+  message: Welcome to the simple E-Commerce.

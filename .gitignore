@@ -1,0 +1,9 @@
+.idea
+!.idea/modules.xml
+!.idea/compiler.xml
+!.idea/encodings.xml
+!.idea/misc.xml
+/supportsub
+erl_crash.dump
+# Project exclude paths
+/service-discovery/target/

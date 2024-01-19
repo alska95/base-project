@@ -1,0 +1,8 @@
+https://repo1.maven.org/maven2 메이븐에 등록된거 찾아볼때는 여기 참고해보자 java11 호환되는것 중 최신 executable jar 찾느라 오래 걸림
+
+https://repo1.maven.org/maven2/io/zipkin/zipkin-server/2.26.0/
+java -jar zipkin.jar
+
+sleuth와 같이 사용한다.
+traceId (최초 호버 서버 아이디) spanId (호출되는 서비스들의 아이디)를 활용하여 트레이스 추적함
+traceId spanId를 만드는 주체는 Sleuth이고 Zipkin은 정보를 수집하고 시각화함

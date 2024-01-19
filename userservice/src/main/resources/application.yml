@@ -1,0 +1,69 @@
+server:
+  port: 0
+  # 0지정하면 무작위 내장 톰캣 포트가 지정된다. 다만 유래카에서는 어떤 포트를 할당 받더라도 0번 포트만 보이게된다. eureka-instance-id값을 등록하여 관리도 가능하다.
+  # -Dserver.port vm옵션을 통해 포트풀을 지정하여 실행 가능.
+  # 서비스 디스커버리에 등록되어 있기 때문에 무작위로 포트가 생성되어도 트래킹이 가능하고 lb를 통하여 올바른 요청을 보낼 수 있다.
+
+spring:
+  zipkin:
+    base-url: http://localhost:9411
+    enabled: true
+  sleuth:
+    sampler:
+      probability: 1.0
+  #config-server에 설정을 가져오기 위해 springCloudBus를 이용한다.
+  #번거롭게 actuator에서 refresh 호출하는것보다 효율적이다.
+  #분산되어있는 시스템끼리 연결해주기 위해 메시지브로커가 필요한데 메시지 브로커 역할로 rabbitMq를 사용한다.
+  #config-server의 상태 및 구성에 대한 변경 사항을 연결된 노드에게 broadCast한다.
+  application:
+    name: user-service
+  jpa:
+    hibernate:
+      ddl-auto: update
+    gateway:
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/**
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${random.value}} #랜덤포트라 이름 부여
+    lease-renewal-interval-in-seconds: 1
+    lease-expiration-duration-in-seconds: 2
+  client:
+    register-with-eureka: true
+    fetch-registry: true # 유레카 서버로부터 인스턴스 정보들을 주기적으로 가져올것이지 여부. true면 갱신된 정보를 가져옴
+    service-url:
+      defaultZone: http://localhost:8000/eureka #서버의 위치값 지정
+
+
+
+order_service:
+#  url: http://127.0.0.1:8000/order-service/%s/orders
+  url: http://order-service/%s/orders
+  exception:
+    orders_is_empty: order is empty
+
+greeting:
+  message: Welcome to the simple E-Commerce.
+
+#Config server에서 관리한다.
+#token:
+#  expiration-time: 3600000
+#  secret: user_token
+
+#actuator의 관리 엔드포인트 설정을 나타낸다.
+#actuator 관련 설정
+#https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html#actuator.endpoints
+#busrefresh: Spring Cloud Bus를 사용하여 설정 변경을 전파한다.
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans, busrefresh, info, prometheus, metrics
+logging:
+  level:
+    com.example: info
+

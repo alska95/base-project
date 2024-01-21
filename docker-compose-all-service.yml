@@ -45,15 +45,18 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=alpha
 #  catalog-service:
-#    image: rhsalska55/catalog-service
-#    build:
-#      context: .
-#      args:
-#        MAVEN_PROFILE: alpha
-#    container_name: catalog-service
-#    depends_on:
-#      - config-service
-#
+  catalog-service:
+    image: rhsalska55/catalog-service
+    build:
+      context: ./catalog-service
+      args:
+        MAVEN_PROFILE: alpha
+    container_name: catalog-service
+    depends_on:
+      - config-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=alpha
+#  user-service
 #  user-service:
 #    image: rhsalska55/user-service
 #    build:
@@ -63,7 +66,7 @@ services:
 #    container_name: user-service
 #    depends_on:
 #      - config-service
-#
+#  order-service
 #  order-service:
 #    image: rhsalska55/order-service
 #    build:

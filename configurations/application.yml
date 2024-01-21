@@ -1,6 +1,6 @@
 token:
   expiration: 36000009
-  secret: user_name
+  secret: '{cipher}d9d321a003ecf73cee6cf9017e7a49c02e27a05217f7d71c5fd4ee170c603a5d'
 
 gateway:
   ip: gateway-service

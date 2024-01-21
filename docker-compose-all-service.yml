@@ -34,7 +34,7 @@ services:
   gateway-service:
     image: rhsalska55/gateway-service
     build:
-      context: ./cloud-gateway
+      context: ./gateway-service
       args:
         MAVEN_PROFILE: alpha
     container_name: gateway-service

@@ -3,7 +3,7 @@ token:
   secret: user_name
 
 gateway:
-  ip: gateway-service
+  ip: 127.0.0.1
 
 kafka:
   topic:
@@ -24,7 +24,7 @@ spring:
     username: '{cipher}0ca1a8c1486bb650a37e42c9b938c1357f7c57c4caa4864ff0e4c46d93be3c55' #configServer의 encryptKey로 암호화된 값
     password: '{cipher}0ca1a8c1486bb650a37e42c9b938c1357f7c57c4caa4864ff0e4c46d93be3c55'
   zipkin:
-    base-url: zipkin:9411
+    base-url: 127.0.0.1:9411
     enabled: true
   sleuth:
     sampler:

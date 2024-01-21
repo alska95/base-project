@@ -3,7 +3,7 @@
 # 컨테이너, 이미지, 네트워크 이름, 프로필
 CONTAINER_NAME=gateway-service
 IMAGE_NAME=rhsalska55/gateway-service:1.0
-NETWORK_NAME=ecommerce-network
+NETWORK_NAME=bridge-network
 PROFILE=default
 
 # 포트 번호

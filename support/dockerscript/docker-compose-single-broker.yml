@@ -1,11 +1,11 @@
-version: '2'
+version: '3'
 services:
   zookeeper:
     image: wurstmeister/zookeeper
     ports:
       - "2181:2181"
     networks:
-      - ecommerce-network
+      - bridge-network
   kafka:
     image: wurstmeister/kafka
     ports:
@@ -19,8 +19,8 @@ services:
     depends_on:
       - zookeeper
     networks:
-      - ecommerce-network
+      - bridge-network
 
 networks:
-  ecommerce-network:
+  bridge-network:
     external: true

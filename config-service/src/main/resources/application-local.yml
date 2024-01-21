@@ -1,0 +1,33 @@
+
+server:
+  port: 8888
+
+logging:
+  level:
+    org.springframework.cloud.config: INFO
+
+spring:
+  application:
+    name: config-service
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/alska95/SpringCloud_Practice.git
+          search-paths: configurations
+#          uri: file://I:\programming\Spring_Cloud\configurations
+  profiles:
+    active: local
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, refresh, busrefresh, prometheus, metric
+
+#지원 url actuator/env, actuator/health, {yml명}/{profile(default)

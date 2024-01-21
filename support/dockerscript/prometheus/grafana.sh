@@ -3,7 +3,7 @@
 # 컨테이너, 이미지, 네트워크 이름
 CONTAINER_NAME=grafana
 IMAGE_NAME=grafana/grafana
-NETWORK_NAME=ecommerce-network
+NETWORK_NAME=bridge-network
 
 # 포트 번호
 HOST_PORT=3000

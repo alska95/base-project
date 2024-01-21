@@ -3,7 +3,7 @@
 # 컨테이너, 이미지, 네트워크 이름
 CONTAINER_NAME=mysql
 IMAGE_NAME=rhsalska55/my-mysql:1.0
-NETWORK_NAME=ecommerce-network
+NETWORK_NAME=bridge-network
 
 if [ "$1" = "start" ]; then
     # 컨테이너가 이미 존재하는지 확인
@@ -34,7 +34,7 @@ if [ "$1" = "start" ]; then
 
     # 새 컨테이너 실행
     echo "Running new container..."
-    docker run -d --name $CONTAINER_NAME $NETWORK_OPTION -v /Users/user/Desktop/git/SpringCloud_Practice/supportsub/mysqlmount:/var/lib/mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=true -p 3306:3306 $IMAGE_NAME
+    docker run -d --name $CONTAINER_NAME $NETWORK_OPTION -v /Users/user/Desktop/git/base-project/supportsub/mysqlmount:/var/lib/mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=true -p 3306:3306 $IMAGE_NAME
 elif [ "$1" = "stop" ]; then
     # 컨테이너가 이미 존재하는지 확인
     if [ "$(docker ps -aq -f name=$CONTAINER_NAME)" ]; then

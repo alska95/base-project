@@ -36,9 +36,9 @@ mysql 실행
     이번 테스트에서는 같은 호스트(로컬)에서 컨테이너를 여러개 띄울거라 브릿지 네트워크 사용 예정
     스웜을 테스트해보려면 도커를 여러개 띄워두고 이를 호스트 취급하고 도커 안에서 서비스 도커 컨테이너를 실행시켜보면 되려나
 
-    docker network create ecommerce-network
+    docker network create bridge-network
     docker network ls
-    docker network inspect ecommerce-network
+    docker network inspect bridge-network
     아래와 같은 설정의 네트워크가 생성됨
         "Config": [
             {
@@ -49,7 +49,7 @@ mysql 실행
 
 
 config-service 컨테이너 이미지
-    이미지 실행: docker run -d --name config-service -p 8888:8888 -e spring.rabbitmq.host=rabbitmq spring.profiles.active=default --network ecommerce-network rhsalska55/config-service:1.0
+    이미지 실행: docker run -d --name config-service -p 8888:8888 -e spring.rabbitmq.host=rabbitmq spring.profiles.active=default --network bridge-network rhsalska55/config-service:1.0
     브릿지 네트워크 사용: -e spring.rabbitmq.host=rabbitmq
         application.yml설정을 매번 바뀌는 rabbitmq url과 맞춰서 변경해야하는 일을 방지해준다.
     로그 확인하는법: docker logs -f my-container

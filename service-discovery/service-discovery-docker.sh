@@ -1,17 +1,18 @@
 #!/bin/bash
 
-# 컨테이너, 이미지, 네트워크 이름
-CONTAINER_NAME=prometheus
-IMAGE_NAME=prom/prometheus
+# 컨테이너, 이미지, 네트워크 이름, 프로필
+CONTAINER_NAME=service-discovery
+IMAGE_NAME=rhsalska55/service-discovery:1.0
 NETWORK_NAME=bridge-network
+PROFILE=default
 
 # 포트 번호
-HOST_PORT=9090
-CONTAINER_PORT=9090
+HOST_PORT=8000
+CONTAINER_PORT=8000
 
 if [ "$1" = "start" ]; then
     # 컨테이너가 이미 존재하는지 확인
-    if [ "$(docker ps -aq -f name=$CONTAINER_NAME)" ]; then
+    if [ $(docker ps -aq -f name=$CONTAINER_NAME) ]; then
         echo "Stopping and removing existing container..."
         # 컨테이너 중지 및 삭제
         docker stop $CONTAINER_NAME
@@ -24,9 +25,13 @@ if [ "$1" = "start" ]; then
         docker rmi $IMAGE_NAME
     fi
 
-    # 이미지 다운로드
-    echo "Pulling latest image..."
-    docker pull $IMAGE_NAME
+    # 패키징 코드도 넣을지 고민
+    echo "Packaging with Maven and skipping tests..."
+    mvn clean package -DskipTests
+
+    # 이미지 빌드
+    echo "Building image..."
+    docker build --tag $IMAGE_NAME .
 
     # 네트워크가 존재하는지 확인, 없다면 디폴트 네트워크 사용
     if docker network ls | grep -qw $NETWORK_NAME; then
@@ -38,10 +43,10 @@ if [ "$1" = "start" ]; then
 
     # 새 컨테이너 실행
     echo "Running new container..."
-    docker run -d --name $CONTAINER_NAME $NETWORK_OPTION -p $HOST_PORT:$CONTAINER_PORT -v /Users/user/Desktop/git/SpringCloud_Practice/support/dockerscript/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml $IMAGE_NAME
+    docker run -d --name $CONTAINER_NAME $NETWORK_OPTION -p $HOST_PORT:$CONTAINER_PORT -e SPRING_CLOUD_CONFIG_URI=http://config-service:8888 -e SPRING_RABBITMQ_HOST=rabbitmq -e SPRING_PROFILES_ACTIVE=$PROFILE $KEYSTORE_OPTION $IMAGE_NAME
 elif [ "$1" = "stop" ]; then
     # 컨테이너가 이미 존재하는지 확인
-    if [ "$(docker ps -aq -f name=$CONTAINER_NAME)" ]; then
+    if [ $(docker ps -aq -f name=$CONTAINER_NAME) ]; then
         echo "Stopping and removing container..."
         # 컨테이너 중지 및 삭제
         docker stop $CONTAINER_NAME

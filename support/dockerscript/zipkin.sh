@@ -3,7 +3,7 @@
 # 컨테이너, 이미지, 네트워크 이름
 CONTAINER_NAME=zipkin
 IMAGE_NAME=openzipkin/zipkin
-NETWORK_NAME=ecommerce-network
+NETWORK_NAME=bridge-network
 
 if [ "$1" = "start" ]; then
     # 컨테이너가 이미 존재하는지 확인

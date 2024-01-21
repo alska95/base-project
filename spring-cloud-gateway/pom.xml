@@ -105,4 +105,34 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>local</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <environment>local</environment>
+            </properties>
+        </profile>
+        <profile>
+            <id>alpha</id>
+            <properties>
+                <environment>alpha</environment>
+            </properties>
+        </profile>
+        <profile>
+            <id>beta</id>
+            <properties>
+                <environment>beta</environment>
+            </properties>
+        </profile>
+        <profile>
+            <id>release</id>
+            <properties>
+                <environment>release</environment>
+            </properties>
+        </profile>
+    </profiles>
+
 </project>

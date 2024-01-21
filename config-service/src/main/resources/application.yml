@@ -1,12 +1,14 @@
-
 server:
   port: 8888
 
-logging:
-  level:
-    org.springframework.cloud.config: INFO
-
 spring:
+  eureka:
+    client:
+      enabled: true
+      register-with-eureka: true
+      fetch-registry: true
+      service-url:
+        default-zone: http://service-discovery:8000/eureka #서버의 위치값 지정
   application:
     name: config-service
   rabbitmq:
@@ -20,11 +22,27 @@ spring:
         git:
           uri: https://github.com/alska95/base-project.git
           search-paths: configurations
-#          uri: file://I:\programming\Spring_Cloud\configurations
+      # https://cloud.spring.io/spring-cloud-config/multi/multi__spring_cloud_config_client.html
+      # discovery와 config중 누가 누구에 의존해야 하느냐 때문에 의견이 많은듯 하다.
+      # config first를 사용하면 discovery가 config의 설정을 가져올 수 있다는 이점이 있지만
+      # 나는 config서버를 discovery에 등록하기 위해 discovery-first를 사용한다.
+      discovery:
+        enabled: true
+        service-id: config-service
+
+    gateway:
+      routes:
+        - id: config-service
+          uri: lb://config-service
+          predicates:
+            - Path=/config-service/**
 management:
   endpoints:
     web:
       exposure:
         include: health, refresh, busrefresh, prometheus, metric
-
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
 #지원 url actuator/env, actuator/health, {yml명}/{profile(default)

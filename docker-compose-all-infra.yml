@@ -1,0 +1,63 @@
+version: '3'
+services:
+  # Zookeeper service for Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - 2181:2181
+
+  # Kafka service
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    ports:
+      - 9092:9092
+
+  # RabbitMQ service
+  rabbitmq:
+    image: rabbitmq:management
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  # Zipkin service for distributed tracing
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - 9411:9411
+
+  # Grafana service for metrics visualization
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+
+  # Prometheus service for monitoring
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./support/dockerscript/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+
+  # MySQL service
+  mysql:
+    build: ./support/dockerscript/mysql
+    image: rhsalska55/my-mysql:1.0
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: true
+    volumes:
+      - ./supportsub/mysqlmount:/var/lib/mysql
+    ports:
+      - 3306:3306

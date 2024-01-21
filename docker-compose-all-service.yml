@@ -1,0 +1,75 @@
+version: '3'
+
+services:
+  service-discovery:
+    image: rhsalska55/service-discovery
+    build:
+      context: ./service-discovery
+      args:
+        MAVEN_PROFILE: alpha
+    container_name: service-discovery
+    ports:
+      - "8000:8000"
+    environment:
+      - SPRING_PROFILES_ACTIVE=alpha
+
+#  config-service:
+  config-service:
+    image: rhsalska55/config-service
+    build:
+      context: ./config-service
+      args:
+        MAVEN_PROFILE: alpha
+    container_name: config-service
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./configurations:/configurations
+    depends_on:
+      - service-discovery
+    environment:
+      - SPRING_PROFILES_ACTIVE=alpha
+
+#  gateway-service:
+  gateway-service:
+    image: rhsalska55/gateway-service
+    build:
+      context: ./cloud-gateway
+      args:
+        MAVEN_PROFILE: alpha
+    container_name: gateway-service
+    ports:
+      - "8100:8100"
+    depends_on:
+      - config-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=alpha
+#  catalog-service:
+#    image: rhsalska55/catalog-service
+#    build:
+#      context: .
+#      args:
+#        MAVEN_PROFILE: alpha
+#    container_name: catalog-service
+#    depends_on:
+#      - config-service
+#
+#  user-service:
+#    image: rhsalska55/user-service
+#    build:
+#      context: .
+#      args:
+#        MAVEN_PROFILE: alpha
+#    container_name: user-service
+#    depends_on:
+#      - config-service
+#
+#  order-service:
+#    image: rhsalska55/order-service
+#    build:
+#      context: .
+#      args:
+#        MAVEN_PROFILE: alpha
+#    container_name: order-service
+#    depends_on:
+#      - config-service

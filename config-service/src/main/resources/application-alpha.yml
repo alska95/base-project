@@ -1,4 +1,3 @@
-
 server:
   port: 8888
 
@@ -17,10 +16,9 @@ spring:
   cloud:
     config:
       server:
-        git:
-          uri: https://github.com/alska95/base-project.git
-          search-paths: configurations
-#          uri: file://I:\programming\Spring_Cloud\configurations
+        native:
+          search-locations: file:/configurations
+
 management:
   endpoints:
     web:

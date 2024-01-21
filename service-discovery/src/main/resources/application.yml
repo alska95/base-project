@@ -3,7 +3,7 @@ server:
   #application name for service discovery
 spring:
   application:
-    name: ecommerce
+    name: service-discovery
   #since this project is service discovery, there's no need for service discovery registration.
 eureka:
   client:

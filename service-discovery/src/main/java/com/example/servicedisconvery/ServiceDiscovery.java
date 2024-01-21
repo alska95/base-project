@@ -1,4 +1,4 @@
-package com.example.ecommerce;
+package com.example.servicedisconvery;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,10 +18,10 @@ import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
  * */
 @SpringBootApplication
 @EnableEurekaServer //디스커버리 서버 자격으로서 등록해준다.
-public class EcommerceApplication {
+public class ServiceDiscovery {
 
     public static void main(String[] args) {
-        SpringApplication.run(EcommerceApplication.class, args);
+        SpringApplication.run(ServiceDiscovery.class, args);
     }
 
 }

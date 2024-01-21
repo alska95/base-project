@@ -6,11 +6,10 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://service-discovery:8000/eureka
+      defaultZone: http://127.0.0.1:8000/eureka
   instance:
     lease-renewal-interval-in-seconds: 1
     lease-expiration-duration-in-seconds: 2
-
 
 spring:
   application:
@@ -107,7 +106,6 @@ spring:
             - AuthorizationHeaderFilter
             #/order-service/(?<segment>.*): /order-service/로 시작하는 모든 경로를 매칭하고 뒤의 문자열을 segment로 정의.
             #/$\{segment}: 새로운 경로를 정의하는 템플릿
-
       default-filters:
         - name: GlobalFilter
           args:

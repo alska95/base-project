@@ -11,7 +11,17 @@ kafka:
       catalog: 'order-catalog'
       sync: 'order-db-sync'
   broker:
-    uri: 'dockerscript-kafka-1:9092'
+    uri: 'kafka:9092'
+eureka:
+  instance:
+    instance-id:  ${spring.application.name}:${spring.application.instance_id:${random.value}} #랜덤포트라 이름 부여
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 90
+  client:
+    register-with-eureka: true
+    fetch-registry: true # 유레카 서버로부터 인스턴스 정보들을 주기적으로 가져올것이지 여부. true면 갱신된 정보를 가져옴
+    service-url:
+      defaultZone: http://service-discovery:8000/eureka #서버의 위치값 지정
 
 spring:
   #config-server에 설정을 가져오기 위해 springCloudBus를 이용한다.
@@ -31,9 +41,17 @@ spring:
       probability: 1.0
   kafka:
     consumer:
+      bootstrap-servers: kafka:9092
       group-id: consumer-group-id
   datasource:
     initialization-mode: never
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+      path: /h2-console
+
 
 #actuator의 관리 엔드포인트 설정을 나타낸다.
 #actuator 관련 설정
@@ -47,7 +65,8 @@ management:
 
 logging:
   level:
-    com.example: info
+    root: INFO
+    org.springframework.web: DEBUG
   file:
     /logs
 

@@ -1,5 +1,6 @@
 FROM mysql
 ENV MYSQL_DATABASE test
+ENV MYSQL_ROOT_HOST %
+COPY init.sql /docker-entrypoint-initdb.d/
 EXPOSE 3306
-RUN ["chown", "-R", "mysql:mysql", "/var/lib/mysql"]
 ENTRYPOINT ["mysqld", "--secure-file-priv="]

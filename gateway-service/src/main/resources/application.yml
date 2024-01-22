@@ -119,4 +119,4 @@ management:
   endpoints:
     web:
       exposure:
-        include: refresh, headth, beans, httptrace, busrefresh
+        include: refresh, health, beans, httptrace, busrefresh

@@ -1,7 +1,7 @@
 spring:
   cloud:
     config:
-      uri: http://config-service:8888
-      name: application, user-service
+      uri: http://127.0.0.1:8888
+      profile: local
 
 ##application.yml보다 우선 순위가 높은 설정파일이다.

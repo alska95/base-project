@@ -1,6 +1,6 @@
 token:
   expiration: 36000009
-  secret: user_name
+  secret: '{cipher}d9d321a003ecf73cee6cf9017e7a49c02e27a05217f7d71c5fd4ee170c603a5d'
 
 gateway:
   ip: 127.0.0.1
@@ -11,7 +11,11 @@ kafka:
       catalog: 'order-catalog'
       sync: 'order-db-sync'
   broker:
-    uri: 'dockerscript-kafka-1:9092'
+    uri: 'localhost:9092'
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8000/eureka
 
 spring:
   #config-server에 설정을 가져오기 위해 springCloudBus를 이용한다.
@@ -31,6 +35,7 @@ spring:
       probability: 1.0
   kafka:
     consumer:
+      bootstrap-servers: localhost:9092
       group-id: consumer-group-id
   datasource:
     initialization-mode: never
@@ -47,9 +52,7 @@ management:
 
 logging:
   level:
-    com.example: info
+    root: INFO
+    org.springframework.web: DEBUG
   file:
     /logs
-
-greeting:
-  message: Welcome to the simple E-Commerce.

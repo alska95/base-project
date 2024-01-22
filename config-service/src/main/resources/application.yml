@@ -45,4 +45,5 @@ logging:
   level:
     root: INFO
     org.springframework.web: DEBUG
+
 #지원 url actuator/env, actuator/health, {yml명}/{profile(default)

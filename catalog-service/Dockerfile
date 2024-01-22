@@ -1,8 +1,6 @@
 FROM maven:3.8.1-openjdk-11-slim as build
 WORKDIR /app
 COPY . /app
-# curl 설치
-RUN apt-get update && apt-get install -y curl
 # Maven 빌드 프로파일을 변수로 전달
 ARG MAVEN_PROFILE=local
 # Docker 이미지 내에서 애플리케이션의 패키징이 이루어진다.
@@ -15,6 +13,6 @@ WORKDIR /app
 # --from=build 옵션은 파일을 가져올 단계를 지정한다.
 # /app/target/service-discovery-1.0.jar는 복사할 파일의 경로다.
 # service-discovery-1.0.jar는 파일이 복사될 위치다.
-COPY --from=build /app/target/cloud-gateway-1.0.jar cloud-gateway-1.0.jar
-# java -jar service-discovery-1.0.jar 명령을 통해 애플리케이션이 시작된다.
-ENTRYPOINT ["java","-jar","cloud-gateway-1.0.jar"]
+COPY --from=build /app/target/catalog-service-1.0.jar catalog-service-1.0.jar
+# java -jar service-discovery-1.0.jar 명령을 통해 애플리케이션이 시작된다. 메이븐 프로필과 같은 스프링 프로필을 사용한다.
+ENTRYPOINT ["java","-jar","catalog-service-1.0.jar"]

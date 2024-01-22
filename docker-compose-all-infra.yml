@@ -3,6 +3,7 @@ services:
   # Zookeeper service for Kafka
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
     ports:
@@ -11,12 +12,13 @@ services:
   # Kafka service
   kafka:
     image: confluentinc/cp-kafka:latest
+    container_name: kafka
     depends_on:
       - zookeeper
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     ports:
       - 9092:9092
@@ -24,6 +26,7 @@ services:
   # RabbitMQ service
   rabbitmq:
     image: rabbitmq:management
+    container_name: rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -34,18 +37,21 @@ services:
   # Zipkin service for distributed tracing
   zipkin:
     image: openzipkin/zipkin
+    container_name: zipkin
     ports:
       - 9411:9411
 
   # Grafana service for metrics visualization
   grafana:
     image: grafana/grafana
+    container_name: grafana
     ports:
       - 3000:3000
 
   # Prometheus service for monitoring
   prometheus:
     image: prom/prometheus
+    container_name: prometheus
     volumes:
       - ./support/dockerscript/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
@@ -54,10 +60,37 @@ services:
   # MySQL service
   mysql:
     build: ./support/dockerscript/mysql
-    image: rhsalska55/my-mysql:1.0
+    container_name: mysql
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: true
     volumes:
       - ./supportsub/mysqlmount:/var/lib/mysql
     ports:
       - 3306:3306
+  service-discovery:
+    image: rhsalska55/service-discovery
+    build:
+      context: ./service-discovery
+      args:
+        MAVEN_PROFILE: alpha
+    container_name: service-discovery
+    ports:
+      - "8000:8000"
+    environment:
+      - SPRING_PROFILES_ACTIVE=alpha
+  #  config-service:
+  config-service:
+    image: rhsalska55/config-service
+    build:
+      context: ./config-service
+      args:
+        MAVEN_PROFILE: alpha
+    container_name: config-service
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./configurations:/configurations
+    depends_on:
+      - service-discovery
+    environment:
+      - SPRING_PROFILES_ACTIVE=alpha

@@ -3,4 +3,3 @@ spring:
     config:
       uri: http://config-service:8888
       name: application, order-service
-      profile: local

@@ -5,15 +5,10 @@ server:
   # 서비스 디스커버리에 등록되어 있기 때문에 무작위로 포트가 생성되어도 트래킹이 가능하고 lb를 통하여 올바른 요청을 보낼 수 있다.
 
 spring:
-  h2:
-    console:
-      enabled: true
-      settings:
-        web-allow-others: true
-      path: /h2-console
   datasource:
     url: jdbc:mysql://mysql:3306/test
     username: '{cipher}abc7c43bc0213d35bd2012a80ccef8d5377c6dc70da4ba14fc3dd84b1a348b4c'
+    password: '{cipher}abc7c43bc0213d35bd2012a80ccef8d5377c6dc70da4ba14fc3dd84b1a348b4c'
   application:
     name: user-service
   jpa:
@@ -26,15 +21,8 @@ spring:
         predicates:
           - Path=/user-service/**
 
-eureka:
-  instance:
-    instance-id: ${spring.application.name}:${random.value}} #랜덤포트라 이름 부여
-    lease-renewal-interval-in-seconds: 1
-    lease-expiration-duration-in-seconds: 2
-  client:
-    register-with-eureka: true
-    fetch-registry: true # 유레카 서버로부터 인스턴스 정보들을 주기적으로 가져올것이지 여부. true면 갱신된 정보를 가져옴
-    service-url:
-      defaultZone: http://service-discovery:8000/eureka #서버의 위치값 지정
-
-
+order_service:
+  #  url: http://127.0.0.1:8000/order-service/%s/orders
+  url: http://order-service/%s/orders
+  exception:
+    orders_is_empty: order is empty

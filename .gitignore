@@ -7,3 +7,5 @@
 erl_crash.dump
 # Project exclude paths
 /service-discovery/target/
+/support/dockerscript/jenkins
+!/support/dockerscript/jenkins/jobs/*/config.xml

@@ -1,0 +1,38 @@
+기본 실행 스크립트 docker run --name~ -p 8088:8080 -p 50000:50000 --restart=on-failure -v ./jenkins:/var/jenkins_home jenkins/jenkins
+
+* 초기 실행
+ 1. 초기 패스워드 확인 - 최초 빌드 시 로그에 나옴
+    b1c985f3b9854c30b1887e0846d2fb5e
+ 2. 그냥 추천 플러그인 다 설치
+ 3. 어드민 유저 생성 (admin, admin)
+ 4. 젠킨스 관리 > 메이븐 ,jdk 등등 설정
+ 5. freestyle로 아이템 생성
+ 6. 기타 정보들 입력하고 build steps로 스크립트 짜고 빌드 할 수 있음
+ 7. 대쉬보드로 돌아가서 빌드하면 됨
+ 8. 빌드 결과에서 여러 요소들 확인 가능
+
+* git, maven 설정
+ 1. github관련, maven Intergration 플러그인 있는지 확인
+ 2. tools로 이동하여 git, maven(그냥 최신으로..)설정 진행
+ 3. 이제 아이템 생성 시 maven project사용 가능
+ 4. maven project 생성하여 빌드 배포 원하는 git 주소 입력
+    4-1. 워크스페이스 접근 권한이 없다해서 루트 계정으로 컨테이너 다시 빌드
+ 5. 빌드 트리거, pre steps등 설정
+ 6. 빌드에서 실행하길 원하는 메이븐 명령어 입력
+    6-1. 서브 디랙토리에 pom.xml이 있기 때문에 해당 경로 service-discovery/pom.xml 지정
+    6-2. clean compile package -DskipTests
+
+* 톰캣에 배포
+ 나는 내장 톰캣 써서 jar로 배포 할거지만
+ war로 웹 컨테이너에 직접 배포 하는 경우도 많으니 테스트
+ 1. deploy war/ear to container선택
+ 2. **/*.war입력
+ 3. 톰켓 컨테이너 선택
+ 4. 배포 대상 톰캣에 접근할 수 있는 credentials 설정
+ 5. 다른 서버에 배포하려면 ssh 필요
+
+* build-trigger > pollScm
+ 1. 깃 코드에 변경이 있을 때 스케쥴링으로 특정 시간에 빌드 트리거 가능
+    cron 이용 ( M H D 월 요일 ) H 0 * * *
+        H는 Hash랜덤값
+

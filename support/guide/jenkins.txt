@@ -36,3 +36,9 @@
     cron 이용 ( M H D 월 요일 ) H 0 * * *
         H는 Hash랜덤값
 
+* ssh서버에 배포
+ 1. 빌드 후 조치에서 send build artifacts over ssh
+ 2. source file: discovery-service/target/*.jar removeprefix: discovery-service/target 등 설정
+    2-1. 포트의 경우 같은 bridge네트워크를 사용하고 있기 때문에 host에 바인딩된 2222가 아니라 22로 요청 보내기
+ 3. jar파일, Dockerfile, 실행 스크립트를 보내고 스크립트 start
+ 4. 잘 띄워진것 확인

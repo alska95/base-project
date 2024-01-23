@@ -10,10 +10,7 @@
 #    --> 젠킨스를 이용하여 빌드할것이기 때문에 주석처리한다.
 FROM openjdk:17-ea-11-jdk-slim
 WORKDIR /app
-# 빌드 단계에서 생성된 JAR 파일이 복사된다.
-# --from=build 옵션은 파일을 가져올 단계를 지정한다.
-# /app/target/service-discovery-1.0.jar는 복사할 파일의 경로다.
-# service-discovery-1.0.jar는 파일이 복사될 위치다.
-COPY --from=build /app/target/service-discovery-1.0.jar service-discovery-1.0.jar
+#COPY --from=build /app/target/service-discovery-1.0.jar service-discovery-1.0.jar
+COPY target/service-discovery-1.0.jar service-discovery-1.0.jar
 # java -jar service-discovery-1.0.jar 명령을 통해 애플리케이션이 시작된다. 메이븐 프로필과 같은 스프링 프로필을 사용한다.
 ENTRYPOINT ["java","-jar","service-discovery-1.0.jar"]

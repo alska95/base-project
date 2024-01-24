@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # 컨테이너, 이미지 이름
-CONTAINER_NAME=ssh-server
-IMAGE_NAME=ssh-server
+CONTAINER_NAME=ansible-server
+IMAGE_NAME=ansible-server
 
 if [ "$1" = "start" ]; then
     # 컨테이너가 이미 존재하는지 확인
@@ -25,7 +25,7 @@ if [ "$1" = "start" ]; then
 
     # 새 컨테이너 실행
     echo "Running new container..."
-    docker run -d --name $CONTAINER_NAME -p 2222:22 -p 8001:8000 --privileged $IMAGE_NAME
+    docker run -d --name $CONTAINER_NAME -p 2223:22 --privileged $IMAGE_NAME
 elif [ "$1" = "stop" ]; then
     # 컨테이너가 이미 존재하는지 확인
     if [ "$(docker ps -aq -f name=$CONTAINER_NAME)" ]; then

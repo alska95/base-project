@@ -1,0 +1,37 @@
+version: '3.7'
+services:
+  ansible-server:
+    build:
+      context: ./ansible  # ansible Dockerfile 위치
+      dockerfile: Dockerfile
+    image: ansible-server
+    container_name: ansible-server
+    restart: always
+    ports:
+      - '2223:22'
+
+  ssh-server:
+    build:
+      context: ./ssh  # ssh Dockerfile 위치
+      dockerfile: Dockerfile
+    image: ssh-server
+    container_name: ssh-server
+    restart: always
+    privileged: true
+    ports:
+      - '2222:22'
+      - '8000:8000'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: "/start.sh"
+
+  jenkins:
+    image: jenkins/jenkins
+    container_name: jenkins
+    restart: on-failure
+    user: root
+    ports:
+      - '8088:8080'
+      - '50000:50000'
+    volumes:
+      - ./jenkins:/var/jenkins_home

@@ -1,0 +1,48 @@
+---
+- hosts: ssh-server
+  vars:
+    CONTAINER_NAME: service-discovery
+    IMAGE_NAME: rhsalska55/service-discovery:1.0
+    PROFILE: default
+    HOST_PORT: 8000
+    CONTAINER_PORT: 8000
+    COMMAND: start  # start 또는 아무거나(stop) ansible-playbook root/service-discovery-playbook.yml -e "COMMAND=stop"
+  tasks:
+    - name: Check if container exists
+      command: docker ps -aq -f name={{CONTAINER_NAME}}
+      register: container_check # 함수처럼 등록 가능
+      changed_when: false
+
+    - name: Debug container_check.stdout
+      debug:
+        var: container_check.stdout
+
+    - name: Stop container
+      command: docker stop {{CONTAINER_NAME}}
+      when: container_check.stdout != ""
+
+    - name: Remove container
+      command: docker rm {{CONTAINER_NAME}}
+      when: container_check.stdout != ""
+
+    - name: Check if image exists locally
+      command: docker images -q {{IMAGE_NAME}}
+      register: image_check
+      changed_when: false
+
+    - name: Debug image_check.stdout
+      debug:
+        var: image_check.stdout
+
+    - name: Remove existing image
+      command: docker rmi {{IMAGE_NAME}}
+      when: image_check.stdout != ""
+
+    - block:
+        - name: Build Docker image
+          command: docker build --no-cache --tag {{IMAGE_NAME}} .
+
+        - name: Run new container
+          command: docker run -d --name {{CONTAINER_NAME}} -p {{HOST_PORT}}:{{CONTAINER_PORT}} -e SPRING_CLOUD_CONFIG_URI=http://config-service:8888 -e SPRING_RABBITMQ_HOST=rabbitmq -e SPRING_PROFILES_ACTIVE={{ PROFILE }} {{IMAGE_NAME}}
+      when: COMMAND == 'start'
+...

@@ -23,6 +23,12 @@ RUN echo "export VISIBLE=now" >> /etc/profile
 RUN mkdir -p /root/.ssh
 RUN echo "Host *\n\tStrictHostKeyChecking no\n\n" > /root/.ssh/config
 
+# SSH key 생성
+RUN ssh-keygen -t rsa -f /root/.ssh/id_rsa -q -P ""
+
+# SSH key 복사 (테스트용)
+RUN sshpass -p 'password' ssh-copy-id -i /root/.ssh/id_rsa.pub root@ssh-server
+
 # SSH 서비스 시작 및 Ansible playbook 실행 스크립트 생성
 RUN echo "#!/bin/sh\n/usr/sbin/sshd -D" > /start.sh && chmod +x /start.sh
 

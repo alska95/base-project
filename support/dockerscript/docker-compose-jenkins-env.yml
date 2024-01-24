@@ -12,6 +12,7 @@ services:
     volumes:
       - ./ansible/hosts:/etc/ansible/hosts
       - ./ansible/playbook.yml:/root/playbook.yml
+      - ./ansible/service-discovery-playbook.yml:/root/service-discovery-playbook.yml
 
   ssh-server:
     build:

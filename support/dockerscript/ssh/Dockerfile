@@ -22,6 +22,10 @@ RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/
 ENV NOTVISIBLE "in users profile"
 RUN echo "export VISIBLE=now" >> /etc/profile
 
+# SSH StrictHostKeyChecking 끄기
+RUN mkdir -p /root/.ssh
+RUN echo "Host *\n\tStrictHostKeyChecking no\n\n" > /root/.ssh/config
+
 # Docker 서비스 시작 및 ssh 스크립트 생성
 RUN echo "#!/bin/sh\n/usr/bin/dockerd & /usr/sbin/sshd -D" > /start.sh && chmod +x /start.sh
 

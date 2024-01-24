@@ -3,7 +3,6 @@
 # 컨테이너, 이미지, 네트워크 이름, 프로필
 CONTAINER_NAME=service-discovery
 IMAGE_NAME=rhsalska55/service-discovery:1.0
-NETWORK_NAME=bridge-network
 PROFILE=default
 
 # 포트 번호
@@ -33,17 +32,9 @@ if [ "$1" = "start" ]; then
     echo "Building image..."
     docker build --tag $IMAGE_NAME .
 
-    # 네트워크가 존재하는지 확인, 없다면 디폴트 네트워크 사용
-    if docker network ls | grep -qw $NETWORK_NAME; then
-        NETWORK_OPTION="--network $NETWORK_NAME"
-    else
-        echo "Network '$NETWORK_NAME' not found. Using default network..."
-        NETWORK_OPTION=""
-    fi
-
     # 새 컨테이너 실행
     echo "Running new container..."
-    docker run -d --name $CONTAINER_NAME $NETWORK_OPTION -p $HOST_PORT:$CONTAINER_PORT -e SPRING_CLOUD_CONFIG_URI=http://config-service:8888 -e SPRING_RABBITMQ_HOST=rabbitmq -e SPRING_PROFILES_ACTIVE=$PROFILE $KEYSTORE_OPTION $IMAGE_NAME
+    docker run -d --name $CONTAINER_NAME -p $HOST_PORT:$CONTAINER_PORT -e SPRING_CLOUD_CONFIG_URI=http://config-service:8888 -e SPRING_RABBITMQ_HOST=rabbitmq -e SPRING_PROFILES_ACTIVE=$PROFILE $IMAGE_NAME
 elif [ "$1" = "stop" ]; then
     # 컨테이너가 이미 존재하는지 확인
     if [ $(docker ps -aq -f name=$CONTAINER_NAME) ]; then

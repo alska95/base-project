@@ -22,6 +22,10 @@ RUN echo "export VISIBLE=now" >> /etc/profile
 # Ansible playbook 파일 복사
 COPY playbook.yml /root/
 
+# SSH StrictHostKeyChecking 끄기
+RUN mkdir -p /root/.ssh
+RUN echo "Host *\n\tStrictHostKeyChecking no\n\n" > /root/.ssh/config
+
 # SSH 서비스 시작 및 Ansible playbook 실행 스크립트 생성
 RUN echo "#!/bin/sh\n/usr/sbin/sshd -D & ansible-playbook /root/playbook.yml" > /start.sh && chmod +x /start.sh
 

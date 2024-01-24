@@ -1,0 +1,10 @@
+- name: add ansible hosts
+  hosts: jenkinsEnv
+  tasks:
+    - name: add ansible hosts
+      blockinfile:
+        path: /etc/ansible/test
+        block: |
+          [jenkins-env]
+          ssh-server
+          ansible-server

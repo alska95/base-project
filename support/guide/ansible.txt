@@ -1,0 +1,27 @@
+Ansible 명령어
+    -i INVENTORY, --inventory=INVENTORY : 특정 인벤토리를 지정한다.
+    -m MODULE_NAME, --module-name=MODULE_NAME : 사용할 모듈을 지정한다.
+    -a MODULE_ARGS, --args=MODULE_ARGS : 모듈에 전달할 인자를 지정한다.
+    -b, --become : 권한 상승을 요청한다. 기본적으로 sudo를 사용한다.
+        --become-user=BECOME_USER : 권한 상승을 요청할 때 사용할 사용자를 지정한다.
+    -k, --ask-pass : SSH 패스워드를 묻는다.
+    -K, --ask-become-pass : 권한 상승을 위한 패스워드를 묻는다.
+    -u REMOTE_USER, --user=REMOTE_USER : 원격 호스트에 접속할 때 사용할 사용자 이름을 지정한다.
+    -v, --verbose : 상세 모드를 활성화한다. -vvv 또는 -vvvv를 사용하여 상세 수준을 높일 수 있다.
+    -C, --check : 실제로 변경을 수행하지 않고 체크만 수행한다.
+    -D, --diff : 변경 전과 후의 차이를 보여준다.
+    --list-hosts : 적용 되는 호스트 목록 보여준다.
+
+    ansible-playbook playbook.yml 로 플레이북 실행
+
+    해당 실행 옵션들에는 멱등성이 있음
+        -여러번 실행해도 같은 설정이라면 결과가 변경되지 않음
+
+    -m 모듈
+        ping: 전체 서버 health 확인 가능 ansible all -m ping
+        shell: 전체 서버 메모리 확인 가능 ansible all -m shell -a "free -h"
+        copy: 전체 서버에 파일 전달 ansible all -m copy -a "src=./test.txt dest=/tmp"
+        yum: 패키지 설치
+            1. yum list installed | grep httpd 설치 여부 확인
+            2. ansible jenkinsEnv -m yum -a "name=httpd state=present"
+

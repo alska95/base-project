@@ -9,6 +9,9 @@ services:
     restart: always
     ports:
       - '2223:22'
+    volumes:
+      - ./ansible/hosts:/etc/ansible/hosts
+      - ./ansible/playbook.yml:/root/playbook.yml
 
   ssh-server:
     build:

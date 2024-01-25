@@ -2,13 +2,6 @@ server:
   port: 8888
 
 spring:
-  eureka:
-    client:
-      enabled: true
-      register-with-eureka: true
-      fetch-registry: true
-      service-url:
-        default-zone: http://service-discovery:8000/eureka #서버의 위치값 지정
   application:
     name: config-service
   rabbitmq:

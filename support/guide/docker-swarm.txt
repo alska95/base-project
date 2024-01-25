@@ -1,0 +1,107 @@
+Docker Swarm은 여러 서버(또는 노드)에 분산되어 있는 서비스들을 관리하기 위한 Docker의 오케스트레이션 도구이다.
+
+    도커 스웜으로 외부 요청을 받아서 내부 서비스를 호출하는 아키텍처를 구성할것
+    Gateway는 요청을 적절한 서비스로 라우팅한다
+    Eureka대신 서비스 디스커버리를 제공하여 각 서비스의 위치를 추적하고, 서비스 간에 통신을 가능하게 한다.
+    Docker Swarm의 내부 DNS를 사용하면, Gateway는 서비스의 DNS 이름을 사용하여 해당 서비스에 요청을 전달할 수 있다.
+    일반적인지는 모르겠지만 이렇게 하면 서비스의 실제 위치(IP 주소와 포트)를 알 필요 없이 요청을 처리할 수 있다.
+
+Docker Swarm기본 개념 - 공홈 내용 요약 https://docs.docker.com/engine/swarm/
+    클러스터 관리: 도커 엔진 CLI를 사용하여 스웜을 생성하고 관리할 수 있습니다.
+    분산 설계: 런타임에 도커 엔진이 전문화를 처리하므로, 단일 디스크 이미지에서 전체 스웜을 구축할 수 있습니다.
+    선언적 서비스 모델: 도커 엔진은 선언적 접근 방식을 사용하여 애플리케이션 스택의 다양한 서비스의 원하는 상태를 정의할 수 있게 합니다.진
+    스케일링: 각 서비스에 대해 실행하려는 작업의 수를 선언할 수 있습니다. 스케일을 늘리거나 줄이면, 스웜 매니저는 작업을 추가하거나 제거하여 원하는 상태를 유지합니다.
+    원하는 상태 조정: 스웜 매니저 노드는 클러스터 상태를 지속적으로 모니터링하고 실제 상태와 원하는 상태 사이의 차이를 조정합니다.
+    멀티 호스트 네트워킹: 서비스에 대한 오버레이 네트워크를 지정할 수 있습니다.
+    서비스 발견: 스웜 매니저 노드는 스웜 내의 각 서비스에 고유한 DNS 이름을 할당하고 컨테이너를 로드 밸런싱합니다.
+    로드 밸런싱: 서비스의 포트를 외부 로드 밸런서에 노출할 수 있습니다.
+    기본적으로 안전: 스웜 내의 각 노드는 TLS 상호 인증 및 암호화를 강제하여 모든 다른 노드와의 통신을 보호합니다.
+    롤링 업데이트: 롤아웃 시에 서비스 업데이트를 점진적으로 노드에 적용할 수 있습니다.
+
+기본 명령어
+    Swarm 초기화: docker swarm init --advertise-addr <MANAGER-IP>
+    Swarm에 노드 추가: docker swarm join --token <TOKEN> <MANAGER-IP>:<MANAGER-PORT>
+    Swarm에서 노드 제거: docker swarm leave
+    Swarm의 상태 확인: docker info
+    Swarm의 노드 목록 확인: docker node ls
+    서비스 배포: docker service create <OPTIONS> <IMAGE>
+    서비스 목록 확인: docker service ls
+    서비스 상태 확인: docker service ps <SERVICE-ID>
+    서비스 업데이트: docker service update <OPTIONS> <SERVICE-ID>
+    서비스 제거: docker service rm <SERVICE-ID>
+
+튜토리얼 - https://docs.docker.com/engine/swarm/swarm-tutorial/
+기본 설정
+    1.This tutorial requires three Linux hosts라고 하는데 나는 호스트가 메니저이자 워커로써 기능하게하고, 추가로 도커 위에 리눅스 하나 띄워서 진행할것
+    2.docker swarm init --advertise-addr 39.117.54.111 (메니저 노드 ip)
+        2-1. init시 워커이자 마스터로 참여됨.
+    3.워커 인스턴스를 추가 워커 노드로 등록 >> ansible이나 jenkins사용할 예정
+        3-1. 호스트에서 워커 토큰 확인 : docker swarm join-token worker (처음에 보여주긴함)
+        3-2. 워커에서 docker swarm join --token SWMTKN-1-26vvmfsyqu3ic6agirv1ssq9f29zzitea4nmcg81jl0prnjt1i-0h2vvm1si6a47i1jves5u2eqe 39.117.54.111:2377
+    4.만들어둔 docker-compose파일로 워커에 배포하면 정상 적용
+        4-1. 메니저에서 docker stack deploy -c docker-compose-all-infra.yml infra 이런식으로 실행. (-c는 컴포즈 파일이란 의미)
+    5.dns/로드밸런싱 등 정상적으로 작동하는지 확인
+
+배치 제약 조건
+    나는 메모리가 적게 드는 Infra서비스들을 하나의 워커에 몰아넣고 나머지 서비스 인스턴스들은 다른 워커들에 집어넣고 싶은데 어떻게 해야 할까
+    deploy.placement.constraints옵션 이용
+      grafana:
+        image: ...
+        deploy:
+          replicas: 1
+          placement:
+            constraints:
+              - node.labels.type == low-memory
+
+    이렇게 해두면 라벨이 low-memory인 워커 노드로 할당된다.
+    아래와 같이 노드 타입을 결정한다.
+    docker node update --label-add type=low-memory <node-id>
+    그런데 매니저 노드에서 노드가 등록될때마다 업데이트 해줘야 하는거 같은데 어떻게 자동화할지
+
+이미지 업데이트
+    롤링 업데이트를 제공해서 새로운 컨테이너를 만들고 기동후에 기존 컨테이너 종료하고 바로 available해지는거 볼 수 있음
+    근데 삭제는 자동으로 안됨; 기다리면 꺼지는건지?..
+    docker-swarm-update-image스크립트 생성
+    다만 업데이트를 위해서는 각 노드에서 이미지를 끌어와서 써야 하기 때문에 로컬에만 두지 말고 레포지토리에 push해둬야한다고함
+
+쿠버네티스 처럼 마스터 슬레이브 노드 개념 사용
+    Manager 노드: Manager 노드는 Swarm 클러스터를 관리하는 노드입니다.
+            이 노드는 클러스터의 상태를 유지하고, 서비스를 스케줄링하며, Swarm 클러스터의 모든 노드에 대한 작업을 조정합니다. 쿠버네티스의 마스터 노드와 유사한 역할을 합니다.
+    Worker 노드: Worker 노드는 Manager 노드에 의해 할당된 작업을 수행하는 노드입니다.
+            이 노드는 Docker 컨테이너를 실행하고, 서비스를 제공하며, 클러스터의 일부로서 작업을 수행합니다. 쿠버네티스의 워커 노드와 유사한 역할을 합니다.
+
+overlay네트워크 동작 방식
+    Docker Swarm이 서비스 간의 통신을 가능하게 하는 방법은 내부적으로 내장된 DNS 서버와 overlay 네트워크를 사용하는 것입니다. 이를 통해 Docker Swarm은 클러스터 내의 모든 서비스에 대한 네트워킹을 관리합니다.
+        내부 통신:
+
+        서비스 A가 서비스 B에 요청을 보낼 때, 서비스 B의 이름을 사용하여 요청을 보냅니다 (예: zookeeper:2181).
+        Docker Swarm의 내장 DNS 서버는 서비스 B의 이름을 서비스 B의 현재 IP 주소로 변환합니다. 이 IP 주소는 overlay 네트워크 내에서 유효합니다.
+        요청은 overlay 네트워크를 통해 서비스 B의 컨테이너로 전달됩니다.
+        서비스 B의 컨테이너는 요청을 처리하고 응답을 돌려보냅니다. 응답은 다시 overlay 네트워크를 통해 서비스 A로 전달됩니다.
+
+        외부 통신:
+
+        외부 클라이언트가 서비스 A에 요청을 보낼 때, Docker Swarm의 노드의 IP 주소와 서비스 A의 공개 포트를 사용하여 요청을 보냅니다.
+        Docker Swarm의 라우팅 메쉬는 요청을 서비스 A의 적절한 컨테이너로 전달합니다. 이는 클러스터 내의 어떤 노드에서도 동일하게 작동합니다.
+        서비스 A의 컨테이너는 요청을 처리하고 응답을 돌려보냅니다. 응답은 다시 라우팅 메쉬를 통해 외부 클라이언트로 전달됩니다.
+
+    이러한 방식으로 Docker Swarm은 클러스터 내외부에서의 서비스 간의 통신을 관리합니다. 이 과정에서 Docker Swarm이 직접 메시지를 전달하는 것이 아니라, 네트워크 라우팅을 관리하는 역할을 합니다.
+
+
+AWS에서 실행하기:
+    AWS에서 Docker Swarm을 실행하려면 여러 EC2 인스턴스를 준비하고 각 인스턴스에서 Docker를 설치해야 합니다.
+    그런 다음 한 인스턴스에서 Docker Swarm을 초기화합니다
+
+    docker swarm init --advertise-addr <MANAGER-IP>
+
+    이 명령은 해당 인스턴스를 Docker Swarm의 Manager 노드로 설정합니다. <MANAGER-IP>는 Manager 노드의 IP 주소입니다.
+
+    그런 다음 다른 인스턴스에서 다음 명령을 실행하여 Worker 노드로 Swarm에 참여합니다
+    docker swarm join --token <TOKEN> <MANAGER-IP>:2377
+    <TOKEN>은 Manager 노드에서 docker swarm init 명령의 출력에서 얻을 수 있습니다.
+
+    이렇게 하면 Docker Swarm 클러스터가 설정됩니다. 그런 다음 Manager 노드에서 Docker Compose 파일을 사용하여 스택을 배포할 수 있습니다
+    docker stack deploy -c docker-compose.yml mystack
+
+    이 명령은 docker-compose.yml 파일에 정의된 서비스를 mystack이라는 이름의 스택으로 배포합니다. Docker Swarm은 이 스택의 서비스를 클러스터의 노드에 자동으로 분산시킵니다.
+

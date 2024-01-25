@@ -22,7 +22,7 @@ elif [ "$1" = "stop" ]; then
         docker-compose -f $COMPOSE_INFRA_FILE down
     else
         echo "Stopping service '$2'..."
-        docker-compose -f $COMPOSE_INFRA_FILE stop $2
+        docker-compose -f $COMPOSE_INFRA_FILE down $2
     fi
     docker image prune -a -f
 else

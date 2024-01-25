@@ -1,6 +1,5 @@
 version: '3'
 services:
-  # Zookeeper service for Kafka
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper
@@ -8,8 +7,8 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
     ports:
       - 2181:2181
+    restart: on-failure
 
-  # Kafka service
   kafka:
     image: confluentinc/cp-kafka:latest
     container_name: kafka
@@ -22,8 +21,8 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     ports:
       - 9092:9092
+    restart: on-failure
 
-  # RabbitMQ service
   rabbitmq:
     image: rabbitmq:management
     container_name: rabbitmq
@@ -33,64 +32,70 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+    restart: on-failure
 
-  # Zipkin service for distributed tracing
   zipkin:
     image: openzipkin/zipkin
     container_name: zipkin
     ports:
       - 9411:9411
+    restart: on-failure
 
-  # Grafana service for metrics visualization
   grafana:
     image: grafana/grafana
     container_name: grafana
     ports:
       - 3000:3000
+    restart: on-failure
 
-  # Prometheus service for monitoring
   prometheus:
     image: prom/prometheus
     container_name: prometheus
     volumes:
-      - ./support/dockerscript/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../support/dockerscript/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - 9090:9090
+    restart: on-failure
 
-  # MySQL service
   mysql:
-    build: ./support/dockerscript/mysql
+    build: ../support/dockerscript/mysql
     container_name: mysql
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: true
     volumes:
-      - ./supportsub/mysqlmount:/var/lib/mysql
+#      - ../supportsub/mysqlmount:/var/lib/mysql #namedvolume으로 대체
+      - mysql-data:/var/lib/
     ports:
       - 3306:3306
-  service-discovery:
-    image: rhsalska55/service-discovery
-    build:
-      context: ./service-discovery
-      args:
-        MAVEN_PROFILE: alpha
-    container_name: service-discovery
-    ports:
-      - "8000:8000"
-    environment:
-      - SPRING_PROFILES_ACTIVE=alpha
-  #  config-service:
+    restart: on-failure
+
+#  service-discovery: >> 도커 컴포즈 / 스웜으로 대체
+#    image: rhsalska55/service-discovery
+#    build:
+#      context: ./service-discovery
+#      args:
+#        MAVEN_PROFILE: alpha
+#    container_name: service-discovery
+#    ports:
+#      - "8000:8000"
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=alpha
+#    restart: on-failure
+
   config-service:
     image: rhsalska55/config-service
     build:
-      context: ./config-service
+      context: ../config-service
       args:
         MAVEN_PROFILE: alpha
     container_name: config-service
     ports:
       - "8888:8888"
     volumes:
-      - ./configurations:/configurations
-    depends_on:
-      - service-discovery
+      - ../configurations:/configurations
     environment:
       - SPRING_PROFILES_ACTIVE=alpha
+    restart: on-failure
+
+volumes: #named volume 드라이버 옵션 (local, cloud) 등 옵션을 설정할 수 있음
+  mysql-data:

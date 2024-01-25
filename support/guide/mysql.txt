@@ -24,3 +24,4 @@ Docker
     --secure-file-priv에 접근할 수 없다고 함
         엔트리에 추가하여 해당 옵션 제거 --secure-file-priv=''
 
+    docker named space사용하여 데이터 디랙토리 마운트하여 관리

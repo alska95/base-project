@@ -1,0 +1,123 @@
+version: '3.8'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    environment:
+      ZOOKEEPER_CLIENT_PORT: "2181"
+    networks:
+      - base-network
+    ports:
+      - 2181:2181
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    environment:
+      KAFKA_BROKER_ID: "1"
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+    networks:
+      - base-network
+    ports:
+      - 9092:9092
+
+  rabbitmq:
+    image: rabbitmq:management
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+    networks:
+      - base-network
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  zipkin:
+    image: openzipkin/zipkin
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    networks:
+      - base-network
+    ports:
+      - 9411:9411
+
+  grafana:
+    image: grafana/grafana
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    networks:
+      - base-network
+    ports:
+      - 3000:3000
+
+  prometheus:
+    image: prom/prometheus
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    volumes:
+      - ../support/dockerscript/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - base-network
+    ports:
+      - 9090:9090
+
+  mysql:
+    image: mysql
+    build: ../support/dockerscript/mysql
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+    volumes:
+      #- ../supportsub/mysqlmount:/var/lib/mysql #namedvolume으로 대체
+      - mysql-data:/var/lib/
+    networks:
+      - base-network
+    ports:
+      - 3306:3306
+
+  config-service:
+    image: rhsalska55/config-service
+    build:
+      context: ../config-service
+      args:
+        MAVEN_PROFILE: "alpha"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    networks:
+      - base-network
+    ports:
+      - "8888:8888"
+    volumes:
+      - ../configurations:/configurations
+    environment:
+      - SPRING_PROFILES_ACTIVE=alpha
+
+networks:
+  base-network:
+    driver: overlay
+
+volumes:
+  mysql-data:

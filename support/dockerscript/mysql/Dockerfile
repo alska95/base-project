@@ -1,6 +1,8 @@
-FROM mysql
+FROM mysql:latest
 ENV MYSQL_DATABASE test
 ENV MYSQL_ROOT_HOST %
-COPY init.sql /docker-entrypoint-initdb.d/
+COPY init.sql /docker-entrypoint-initdb.d/init.sql
+COPY init.sh /init.sh
+RUN chmod +x /init.sh
 EXPOSE 3306
-ENTRYPOINT ["mysqld", "--secure-file-priv="]
+ENTRYPOINT ["/init.sh"]

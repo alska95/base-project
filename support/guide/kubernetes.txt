@@ -1,0 +1,78 @@
+주요 기능
+    컨테너화 된 애플리케이션 구동
+    서비스 디스커버리와 로드 벨런싱
+        cloud gateway, eureka 대체할 수 있을지?
+    스토리지 오케스트레이션
+    자동화된 롤아웃과 롤백
+    자동화된 빈 패킹
+    자동화된 복구
+    시크릿과 구성 관리
+    가 가능하다고 한다.
+
+쿠버네티스 클러스터
+    쿠버네티스 클러스터는 여러 노드들의 집합으로 이루어져 있다. 이 노드들은 물리적 또는 가상의 서버들로 구성될 수 있다.
+    클러스터 내의 각 노드는 여러 개의 파드를 실행할 수 있다.
+    파드는 쿠버네티스에서 가장 작은 배포 단위로 하나 이상의 컨테이너를 호스팅한다.
+    클러스터는 크게 마스터 노드와 워커 노드로 구성된다.
+    마스터 노드: 클러스터의 관리와 조정을 담당한다. 마스터 노드에는 API 서버 스케줄러 컨트롤러 매니저 등의 구성 요소가 포함되어 있다. 이들은 클러스터의 상태를 관리하고 변경하는 데 사용된다.
+    워커 노드: 워커 노드는 실제 애플리케이션을 실행하는 노드다. 각 워커 노드는 쿠블릿이라는 에이전트를 실행하여 마스터 노드의 지시를 받고 파드를 관리한다. 또한 워커 노드에는 네트워킹을 처리하는 컴포넌트와 컨테이너를 실행하는 런타임 등이 포함된다.
+
+설치
+    개발 환경에서는 도커 데스크탑의 쿠버네티스 사용 (미니큐브)
+    실행시 컨테이너가 되게 많이 뜬다
+    etcd: Kubernetes의 주요 데이터 저장소임. 클러스터 구성 정보, 상태 정보 등을 저장하고 관리함.
+    kube-apiserver: Kubernetes의 API 서버로, 모든 Kubernetes 연산의 중심임. 사용자나 클러스터 내부의 다른 컴포넌트들이 클러스터와 상호작용할 때 이 API 서버를 통해 진행함.
+    kube-scheduler: 새로 생성된 파드를 적절한 노드에 스케줄링하는 컴포넌트임. 파드의 요구사항과 노드의 리소스, 정책 등을 고려하여 스케줄링 결정을 함.
+    kube-controller-manager: Kubernetes의 컨트롤러를 관리하는 컴포넌트임. 이 컨트롤러들은 클러스터의 상태를 관리하고, 필요한 경우 복구 작업을 수행함.
+    kube-proxy: 각 노드에서 네트워크 프록시를 실행하는 컴포넌트임. 서비스의 네트워크 트래픽을 적절한 파드로 전달하는 역할을 함.
+    coredns: 클러스터 내 DNS 서버임. 서비스 이름을 IP 주소로 변환함. 이를 통해 서비스 이름으로 파드 간의 통신을 가능하게 함.
+
+기본 명령어
+    kubectl run <pod-name> --image=<image-name>: 특정 이미지를 사용하여 파드 실행
+    kubectl scale deployment/my-app --replicas=3: 파드의 개수 조절 가능
+    kubectl cluster-info: 클러스터의 상태와 클러스터에서 실행 중인 서비스 확인
+    kubectl get nodes: 클러스터에 연결된 모든 노드의 정보 확인
+    kubectl get pods [--all-namespaces/-A]: 특정 네임스페이스 또는 모든 네임스페이스에 있는 파드의 정보 확인
+    kubectl create deployment <deployment-name> --image=<image-name>: 새로운 디플로이먼트 생성
+    kubectl expose deployment <deployment-name> --type=LoadBalancer --port 8080: 새로운 서비스 생성
+    kubectl set image deployment/<deployment-name> <container-name>=<new-image>: 디플로이먼트의 이미지 업데이트
+    kubectl rollout undo deployment/<deployment-name>: 디플로이먼트의 변경 사항을 이전 버전으로 롤백
+    kubectl logs <pod-name>: 파드에서의 로그 확인
+    kubectl exec -it <pod-name> -- /bin/bash: 파드 내부의 쉘에 접속
+
+pod
+    생성: 미리 만들어둔 yaml파일 대상으로 명령어 실행 ex) kubectl apply -f service-discovery-pod.yaml
+    제거: kubectl delete pod service-discovery-pod -n service-discovery
+
+포트 설정
+    name: 여러 개의 포트를 정의할 때 이 이름을 사용하여 각 포트를 구분한다
+    protocol: 포트가 사용할 프로토콜 TCP 또는 UDP를 지정가능
+    port: 서비스가 노출할 포트 번호
+    targetPort: 서비스가 트래픽을 전달할 파드의 포트 번호
+    nodePort: 서비스가 클러스터 외부에 노출될 때 사용할 노드의 포트 번호이다. 이 속성은 서비스의 type이 NodePort 또는 LoadBalancer일 때 사용할 수 있다.
+    ex)     spec:
+              ports:
+              - name: http
+                protocol: TCP
+                port: 80
+                targetPort: 8080
+              - name: https
+                protocol: TCP
+                port: 443
+                targetPort: 8443
+
+타입 설정: 서비스의 접근 범위와 방식을 결정한다.
+    ClusterIP: 서비스 기본 타입. ClusterIP 서비스는 클러스터 내에서만 접근 가능. 클러스터 내부의 다른 파드에서 서비스 찾고 통신하는 데 사용.
+    NodePort: 클러스터 외부에서도 접근 가능한 서비스 타입. NodePort 서비스는 각 노드의 특정 포트(nodePort)를 서비스에 연결하고, 이 포트를 통해 서비스에 접근 가능.
+    LoadBalancer: 클라우드 서비스 제공자가 제공하는 로드 밸런서를 사용하여 클러스터 외부에서 접근 가능한 서비스 타입.
+        LoadBalancer 서비스는 NodePort와 ClusterIP 서비스를 자동으로 생성하고, 로드 밸런서를 사용하여 트래픽을 노드의 포트로 전달.
+    ExternalName: spec.externalName 필드에 지정된 외부 이름에 DNS CNAME 레코드를 반환하는 서비스 타입. 프록시 제공하지 않고, 데이터 전달하거나 네트워크 트래픽 처리하지 않음.
+
+상태 확인
+    kubectl describe service service-discovery-service
+    kubectl describe pod service-discovery-pod
+    kubectl logs service-discovery-pod
+    kubectl get services
+    kubectl get pods
+
+

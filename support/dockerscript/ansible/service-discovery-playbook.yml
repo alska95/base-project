@@ -43,6 +43,6 @@
           command: docker build --no-cache --tag {{IMAGE_NAME}} .
 
         - name: Run new container
-          command: docker run -d --name {{CONTAINER_NAME}} -p {{HOST_PORT}}:{{CONTAINER_PORT}} -e SPRING_CLOUD_CONFIG_URI=http://config-service:8888 -e SPRING_RABBITMQ_HOST=rabbitmq -e SPRING_PROFILES_ACTIVE={{ PROFILE }} {{IMAGE_NAME}}
+          command: docker run -d --name {{CONTAINER_NAME}} -p {{HOST_PORT}}:{{CONTAINER_PORT}} -e SPRING_PROFILES_ACTIVE={{PROFILE}} {{IMAGE_NAME}}
       when: COMMAND == 'start'
 ...

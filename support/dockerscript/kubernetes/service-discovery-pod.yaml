@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: service-discovery-pod
+  labels:
+    app: service-discovery
+spec:
+  containers:
+    - name: service-discovery
+      image: rhsalska55/service-discovery:1.0
+      ports:
+        - containerPort: 8000
+      env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: alpha

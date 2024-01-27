@@ -46,6 +46,21 @@ Docker Swarm기본 개념 - 공홈 내용 요약 https://docs.docker.com/engine/
         4-1. 메니저에서 docker stack deploy -c docker-compose-all-infra.yml infra 이런식으로 실행. (-c는 컴포즈 파일이란 의미)
     5.dns/로드밸런싱 등 정상적으로 작동하는지 확인
 
+방화벽 설정
+    특정 포트 방화벽을 열어두지 않으면 overlay network를 사용할 수 없게 됨.
+    가이드 첫줄에 있는건데 당연히 열려있을거라 생각해서 생략했음.
+    맥북의 경우 아래 수정이 필요함
+        /etc/pf.conf 파일을 열고 다음 규칙을 추가
+
+        pass in proto tcp from any to any port 2377
+        pass in proto tcp from any to any port 7946
+        pass in proto udp from any to any port 7946
+        pass in proto udp from any to any port 4789
+
+        변경 사항을 적용하고 pf를 활성화
+        sudo pfctl -f /etc/pf.conf
+        sudo pfctl -e
+
 배치 제약 조건
     나는 메모리가 적게 드는 Infra서비스들을 하나의 워커에 몰아넣고 나머지 서비스 인스턴스들은 다른 워커들에 집어넣고 싶은데 어떻게 해야 할까
     deploy.placement.constraints옵션 이용

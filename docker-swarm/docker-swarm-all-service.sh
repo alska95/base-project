@@ -9,6 +9,8 @@ if [ "$1" = "start" ]; then
     # 빌드된 이미지들을 Docker Hub에 푸시
     echo "Pushing all images to Docker Hub..."
     docker-compose -f $COMPOSE_SERVICE_FILE push
+    echo "Pulling all images to Docker Hub..."
+    docker-compose -f $COMPOSE_INFRA_FILE pull
     # Docker Stack으로 서비스 시작
     echo "Deploying all services to the stack..."
     docker stack deploy -c $COMPOSE_SERVICE_FILE $STACK_NAME

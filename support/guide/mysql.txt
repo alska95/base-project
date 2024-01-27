@@ -25,3 +25,5 @@ Docker
         엔트리에 추가하여 해당 옵션 제거 --secure-file-priv=''
 
     docker named space사용하여 데이터 디랙토리 마운트하여 관리
+
+    도커 스웜 환경에서 실행하면 localhost에서 요청이 들어오는게 아니기 때문에 bind-address 설정 필요 0.0.0.0 모두 허용 [mysqld] \n bind-address = 0.0.0.0

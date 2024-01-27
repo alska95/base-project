@@ -33,11 +33,15 @@ Docker Swarm기본 개념 - 공홈 내용 요약 https://docs.docker.com/engine/
 튜토리얼 - https://docs.docker.com/engine/swarm/swarm-tutorial/
 기본 설정
     1.This tutorial requires three Linux hosts라고 하는데 나는 호스트가 메니저이자 워커로써 기능하게하고, 추가로 도커 위에 리눅스 하나 띄워서 진행할것
-    2.docker swarm init --advertise-addr 39.117.54.111 (메니저 노드 ip)
-        2-1. init시 워커이자 마스터로 참여됨.
+    2.docker swarm init --advertise-addr 192.168.35.79 (메니저 노드 ip)
+        2-1. TCP port 2377 for cluster management communications
+             TCP and UDP port 7946 for communication among nodes
+             UDP port 4789 for overlay network traffic 포트들을 열어줘야함
+        2-2. ipconfig getifaddr en0나 ipconfig getifaddr en1로 ip찾기, 아니면 docker info Node address
+        2-3. init시 워커이자 마스터로 참여됨.
     3.워커 인스턴스를 추가 워커 노드로 등록 >> ansible이나 jenkins사용할 예정
         3-1. 호스트에서 워커 토큰 확인 : docker swarm join-token worker (처음에 보여주긴함)
-        3-2. 워커에서 docker swarm join --token SWMTKN-1-26vvmfsyqu3ic6agirv1ssq9f29zzitea4nmcg81jl0prnjt1i-0h2vvm1si6a47i1jves5u2eqe 39.117.54.111:2377
+        3-2. 워커에서 docker swarm join --token SWMTKN-1-3a0r2g77um7jwkxmywb9deonhxkijh16js41euabkxydyejywy-33pgvzbkd5jgtvloneeugnnwn 192.168.35.79:2377
     4.만들어둔 docker-compose파일로 워커에 배포하면 정상 적용
         4-1. 메니저에서 docker stack deploy -c docker-compose-all-infra.yml infra 이런식으로 실행. (-c는 컴포즈 파일이란 의미)
     5.dns/로드밸런싱 등 정상적으로 작동하는지 확인

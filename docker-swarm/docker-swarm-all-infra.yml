@@ -10,8 +10,8 @@ services:
       ZOOKEEPER_CLIENT_PORT: "2181"
     networks:
       - base-network
-    ports:
-      - 2181:2181
+#    ports:
+#      - 2181:2181
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -26,8 +26,8 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
     networks:
       - base-network
-    ports:
-      - 9092:9092
+#    ports:
+#      - 9092:9092
 
   rabbitmq:
     image: rabbitmq:management
@@ -40,9 +40,9 @@ services:
       RABBITMQ_DEFAULT_PASS: "guest"
     networks:
       - base-network
-    ports:
-      - 5672:5672
-      - 15672:15672
+#    ports:
+#      - 5672:5672
+#      - 15672:15672
 
   zipkin:
     image: openzipkin/zipkin
@@ -93,8 +93,8 @@ services:
       - mysql-data:/var/lib/
     networks:
       - base-network
-    ports:
-      - 3306:3306
+#    ports:
+#      - 3306:3306
 
   config-service:
     image: rhsalska55/config-service
@@ -108,8 +108,8 @@ services:
         condition: on-failure
     networks:
       - base-network
-    ports:
-      - "8888:8888"
+#    ports:
+#      - "8888:8888" swarm 환경에서는 외부에서 접근하지 못하도록 주석처리
     volumes:
       - ../configurations:/configurations
     environment:

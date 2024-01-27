@@ -1,0 +1,65 @@
+version: '3.8'
+
+networks:
+  base-network:
+    driver: overlay
+    attachable: true
+
+services:
+  gateway-service:
+    image: rhsalska55/gateway-service
+    build:
+      context: ../gateway-service
+      args:
+        MAVEN_PROFILE: alpha
+    ports:
+      - "8100:8100"
+    environment:
+      - SPRING_PROFILES_ACTIVE="alpha"
+    deploy:
+      restart_policy:
+        condition: on-failure
+    networks:
+      - base-network
+
+  user-service:
+    image: rhsalska55/user-service
+    build:
+      context: ../user-service
+      args:
+        MAVEN_PROFILE: alpha
+    environment:
+      - SPRING_PROFILES_ACTIVE="alpha"
+    deploy:
+      restart_policy:
+        condition: on-failure
+    networks:
+      - base-network
+
+  catalog-service:
+    image: rhsalska55/catalog-service
+    build:
+      context: ../catalog-service
+      args:
+        MAVEN_PROFILE: alpha
+    environment:
+      - SPRING_PROFILES_ACTIVE="alpha"
+    deploy:
+      restart_policy:
+        condition: on-failure
+    networks:
+      - base-network
+
+  order-service:
+    image: rhsalska55/order-service
+    build:
+      context: ../order-service
+      args:
+        MAVEN_PROFILE: alpha
+    environment:
+      - SPRING_PROFILES_ACTIVE="alpha"
+    deploy:
+      restart_policy:
+        condition: on-failure
+    networks:
+      - base-network

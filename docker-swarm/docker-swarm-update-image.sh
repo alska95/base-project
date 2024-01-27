@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # 서비스 이름과 이미지 이름을 입력받습니다.
 # config-service rhsalska55/config-service
 SERVICE_NAME=$1

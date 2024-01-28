@@ -6,6 +6,22 @@ networks:
     attachable: true
 
 services:
+  service-discovery:
+    image: rhsalska55/service-discovery
+    build:
+      context: ../service-discovery
+      args:
+        MAVEN_PROFILE: alpha
+    ports:
+      - "8000:8000"
+    environment:
+      - SPRING_PROFILES_ACTIVE="alpha"
+    deploy:
+      restart_policy:
+        condition: on-failure
+    networks:
+      - base-network
+
   gateway-service:
     image: rhsalska55/gateway-service
     build:

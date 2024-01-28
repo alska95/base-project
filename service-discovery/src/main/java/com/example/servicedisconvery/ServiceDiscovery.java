@@ -18,7 +18,7 @@ import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
  * */
 @SpringBootApplication
 @EnableEurekaServer // 디스커버리 서버 자격으로서 등록해준다.
-@Deprecated //도커 컴포즈, 스웜으로 대체한다.
+//@Deprecated //도커 컴포즈, 스웜으로 대체한다. 완전히 대체가 안될것 같아서 다시 사용
 public class ServiceDiscovery {
 
     public static void main(String[] args) {

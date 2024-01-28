@@ -10,7 +10,7 @@ if [ "$1" = "start" ]; then
     echo "Pushing all images to Docker Hub..."
     docker-compose -f $COMPOSE_SERVICE_FILE push
     echo "Pulling all images to Docker Hub..."
-    docker-compose -f $COMPOSE_INFRA_FILE pull
+    docker-compose -f $COMPOSE_SERVICE_FILE pull
     # Docker Stack으로 서비스 시작
     echo "Deploying all services to the stack..."
     docker stack deploy -c $COMPOSE_SERVICE_FILE $STACK_NAME
@@ -18,6 +18,8 @@ elif [ "$1" = "stop" ]; then
     # Docker Stack으로 서비스 중지
     echo "Removing all services from the stack..."
     docker stack rm $STACK_NAME
+    echo "Removing all images..."
+    docker image rm $(docker image ls -q)
 else
     echo "Unknown command '$1'. Use 'start' or 'stop'."
 fi

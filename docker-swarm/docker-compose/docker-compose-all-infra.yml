@@ -58,7 +58,7 @@ services:
     restart: on-failure
 
   mysql:
-    build: ../support/dockerscript/mysql
+    build: ../../support/dockerscript/mysql
     container_name: mysql
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: true
@@ -85,7 +85,7 @@ services:
   config-service:
     image: rhsalska55/config-service
     build:
-      context: ../config-service
+      context: ../../config-service
       args:
         MAVEN_PROFILE: alpha
     container_name: config-service

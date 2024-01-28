@@ -18,11 +18,12 @@ services:
         condition: on-failure
     environment:
       MYSQL_ROOT_PASSWORD: root
-    volumes:
-      #- ../supportsub/mysqlmount:/var/lib/mysql #namedvolume으로 대체
+    volumes:       #- ../supportsub/mysqlmount:/var/lib/mysql #namedvolume으로 대체
       - mysql-data:/var/lib/mysql
     networks:
       - base-network
+    ports:
+      - 3306:3306
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -34,8 +35,8 @@ services:
       ZOOKEEPER_CLIENT_PORT: "2181"
     networks:
       - base-network
-#    ports:
-#      - 2181:2181
+    ports:
+      - 2181:2181
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -69,7 +70,8 @@ services:
       - 15672:15672
 
   zipkin:
-    image: openzipkin/zipkin
+    image: ghcr.io/openzipkin/zipkin-slim:latest
+    # Environment settings are defined here https://github.com/openzipkin/zipkin/blob/master/zipkin-server/README.md#environment-variables
     deploy:
       replicas: 1
       restart_policy:
@@ -78,6 +80,8 @@ services:
       - base-network
     ports:
       - 9411:9411
+    environment:
+      - STORAGE_TYPE=mem #영구 저장이 필요하면 db이용할것
 
   grafana:
     image: grafana/grafana

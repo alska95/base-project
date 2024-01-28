@@ -2,9 +2,6 @@ token:
   expiration: 36000009
   secret: '{cipher}d9d321a003ecf73cee6cf9017e7a49c02e27a05217f7d71c5fd4ee170c603a5d'
 
-gateway:
-  ip: gateway-service
-
 kafka:
   topic:
     order:
@@ -12,16 +9,17 @@ kafka:
       sync: 'order-db-sync'
   broker:
     uri: 'kafka:9092'
-#eureka: >> 도커 컴포즈, 스웜으로 대체
-#  instance:
-#    instance-id:  ${spring.application.name}:${spring.application.instance_id:${random.value}} #랜덤포트라 이름 부여
-#    lease-renewal-interval-in-seconds: 10
-#    lease-expiration-duration-in-seconds: 90
-#  client:
-#    register-with-eureka: true
-#    fetch-registry: true # 유레카 서버로부터 인스턴스 정보들을 주기적으로 가져올것이지 여부. true면 갱신된 정보를 가져옴
-#    service-url:
-#      defaultZone: http://service-discovery:8000/eureka #서버의 위치값 지정
+
+eureka:
+  instance:
+    instance-id:  ${spring.application.name}:${random.value} #랜덤포트라 이름 부여
+    lease-renewal-interval-in-seconds: 45
+    lease-expiration-duration-in-seconds: 90
+  client:
+    register-with-eureka: true
+    fetch-registry: true # 유레카 서버로부터 인스턴스 정보들을 주기적으로 가져올것이지 여부. true면 갱신된 정보를 가져옴
+    service-url:
+      defaultZone: http://service-discovery:8000/eureka #서버의 위치값 지정
 
 spring:
   #config-server에 설정을 가져오기 위해 springCloudBus를 이용한다.
@@ -34,7 +32,7 @@ spring:
     username: '{cipher}0ca1a8c1486bb650a37e42c9b938c1357f7c57c4caa4864ff0e4c46d93be3c55' #configServer의 encryptKey로 암호화된 값
     password: '{cipher}0ca1a8c1486bb650a37e42c9b938c1357f7c57c4caa4864ff0e4c46d93be3c55'
   zipkin:
-    base-url: zipkin:9411
+    base-url: http://zipkin:9411
     enabled: true
   sleuth:
     sampler:
@@ -71,4 +69,4 @@ logging:
     /logs
 
 greeting:
-  message: Welcome to the simple E-Commerce.
+  message: Welcome.

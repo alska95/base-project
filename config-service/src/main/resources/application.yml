@@ -1,6 +1,17 @@
 server:
   port: 8888
 
+eureka:
+  instance:
+    instance-id:  ${spring.application.name}:${spring.application.instance_id:${random.value}} #랜덤포트라 이름 부여
+    lease-renewal-interval-in-seconds: 45
+    lease-expiration-duration-in-seconds: 90
+  client:
+    register-with-eureka: true
+    fetch-registry: true # 유레카 서버로부터 인스턴스 정보들을 주기적으로 가져올것이지 여부. true면 갱신된 정보를 가져옴
+    service-url:
+      defaultZone: http://service-discovery:8000/eureka #서버의 위치값 지정
+
 spring:
   application:
     name: config-service
